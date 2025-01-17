@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/SinForest/i3-goblocks/module"
@@ -56,7 +57,10 @@ func symbolFromStatus(perc float64, status string) string {
 }
 
 func main() {
-	m := module.New("battery", batPath)
+	tick := flag.Int("tick", 0, "for i3blocks persist mode: if > 0, update interval in seconds")
+	flag.Parse()
+
+	m := module.New("battery", batPath, *tick)
 	chStatus := m.ReadSysFile(fStatus)
 	chNow := m.ReadFloat(fNow)
 	chFull := m.ReadFloat(fFull)

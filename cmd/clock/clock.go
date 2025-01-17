@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
+
+	"github.com/SinForest/i3-goblocks/module"
 )
 
 func colorFromDay(d time.Weekday) string {
@@ -26,26 +29,32 @@ func colorFromDay(d time.Weekday) string {
 }
 
 func main() {
-	t := time.Now()
-	var out string
-	out += fmt.Sprintf("<span face='monospace' color='%s'>%s</span> ",
-		colorFromDay(t.Weekday()),
-		t.Format("Mon"),
-	)
-	out += fmt.Sprintf("<span face='monospace' color='white'>%04d-%02d-</span>",
-		t.Year(),
-		t.Month(),
-	)
-	out += fmt.Sprintf("<b><span face='monospace' color='white'>%02d</span></b> ",
-		t.Day(),
-	)
-	out += fmt.Sprintf("<span face='monospace' color='white'>%02d:%02d</span>",
-		t.Hour(),
-		t.Minute(),
-	)
-	out += fmt.Sprintf("<span face='monospace' color='grey'>:%02d</span>",
-		t.Second(),
-	)
+	tick := flag.Int("tick", 0, "for i3blocks persist mode: if > 0, update interval in seconds")
+	flag.Parse()
 
-	fmt.Println(out)
+	m := module.New("", "", *tick)
+
+	m.Run(func() {
+		t := time.Now()
+		var out string
+		out += fmt.Sprintf("<span face='monospace' color='%s'>%s</span> ",
+			colorFromDay(t.Weekday()),
+			t.Format("Mon"),
+		)
+		out += fmt.Sprintf("<span face='monospace' color='white'>%04d-%02d-</span>",
+			t.Year(),
+			t.Month(),
+		)
+		out += fmt.Sprintf("<b><span face='monospace' color='white'>%02d</span></b> ",
+			t.Day(),
+		)
+		out += fmt.Sprintf("<span face='monospace' color='white'>%02d:%02d</span>",
+			t.Hour(),
+			t.Minute(),
+		)
+		out += fmt.Sprintf("<span face='monospace' color='grey'>:%02d</span>",
+			t.Second(),
+		)
+		fmt.Println(out)
+	})
 }
