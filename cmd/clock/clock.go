@@ -28,34 +28,44 @@ func colorFromDay(d time.Weekday) string {
 	return "grey"
 }
 
+func printTime() error {
+	t := time.Now()
+	var out string
+	out += fmt.Sprintf("<span face='monospace' color='%s'>%s</span> ",
+		colorFromDay(t.Weekday()),
+		t.Format("Mon"),
+	)
+	out += fmt.Sprintf("<span face='monospace' color='white'>%04d-<b>%02d-</b></span>",
+		t.Year(),
+		t.Month(),
+	)
+	out += fmt.Sprintf("<b><span face='monospace' color='white'>%02d</span></b> ",
+		t.Day(),
+	)
+	out += fmt.Sprintf("<span face='monospace' color='white'>%02d:%02d</span>",
+		t.Hour(),
+		t.Minute(),
+	)
+	out += fmt.Sprintf("<span face='monospace' color='grey'>:%02d</span>",
+		t.Second(),
+	)
+	fmt.Println(out)
+	return nil
+}
+
 func main() {
 	tick := flag.Int("tick", 0, "for i3blocks persist mode: if > 0, update interval in seconds")
+	align := flag.Bool("align", true, "if not set to false, and tick divides 60, this will align the clock to the ticks")
 	flag.Parse()
 
 	m := module.New("", "", *tick)
 
-	m.Run(func() error {
+	if *align && *tick > 0 && 60%*tick == 0 {
+		printTime()
 		t := time.Now()
-		var out string
-		out += fmt.Sprintf("<span face='monospace' color='%s'>%s</span> ",
-			colorFromDay(t.Weekday()),
-			t.Format("Mon"),
-		)
-		out += fmt.Sprintf("<span face='monospace' color='white'>%04d-%02d-</span>",
-			t.Year(),
-			t.Month(),
-		)
-		out += fmt.Sprintf("<b><span face='monospace' color='white'>%02d</span></b> ",
-			t.Day(),
-		)
-		out += fmt.Sprintf("<span face='monospace' color='white'>%02d:%02d</span>",
-			t.Hour(),
-			t.Minute(),
-		)
-		out += fmt.Sprintf("<span face='monospace' color='grey'>:%02d</span>",
-			t.Second(),
-		)
-		fmt.Println(out)
-		return nil
-	})
+		tilFullMinute := time.Minute - (time.Duration(t.Second()) * time.Second) - (time.Duration(t.Nanosecond()) * time.Nanosecond)
+		tilFullTick := tilFullMinute % (time.Duration(*tick) * time.Second)
+		time.Sleep(tilFullTick)
+	}
+	m.Run(printTime)
 }
