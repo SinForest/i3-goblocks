@@ -1,4 +1,4 @@
-package module
+package colormap
 
 //TODO: should this be its own package?
 
@@ -8,6 +8,44 @@ import (
 
 	"golang.org/x/exp/constraints"
 )
+
+var (
+	Redish    = Color{240, 0, 90}
+	Red       = Color{255, 0, 0}
+	Orange    = Color{255, 150, 0}
+	Yellow    = Color{255, 210, 0}
+	Green     = Color{50, 255, 0}
+	Turquoise = Color{0, 255, 170}
+)
+
+func DefaultMap() *ColorMap {
+	return &ColorMap{
+		colorMapEntry{
+			pos:   0.0,
+			color: Redish,
+		},
+		colorMapEntry{
+			pos:   0.1,
+			color: Red,
+		},
+		colorMapEntry{
+			pos:   0.3,
+			color: Orange,
+		},
+		colorMapEntry{
+			pos:   0.5,
+			color: Yellow,
+		},
+		colorMapEntry{
+			pos:   0.9,
+			color: Green,
+		},
+		colorMapEntry{
+			pos:   1.0,
+			color: Turquoise,
+		},
+	}
+}
 
 type Number interface {
 	constraints.Integer | constraints.Float
@@ -44,7 +82,7 @@ func (c Color) String() string {
 
 type ColorMap []colorMapEntry
 
-func NewColorMap(r0, g0, b0 int, r1, g1, b1 int) *ColorMap {
+func New(r0, g0, b0 int, r1, g1, b1 int) *ColorMap {
 	return &ColorMap{
 		colorMapEntry{
 			pos:   0.0,

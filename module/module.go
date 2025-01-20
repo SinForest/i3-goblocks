@@ -90,9 +90,9 @@ func (m *Module) Run(f func() error) {
 			m.logger.Fatal(err.Error())
 		}
 	}
+	tick()
 	if m.tick <= 0 {
 		//TODO: handle clicks here, too
-		tick()
 		return
 	}
 	ticker := time.NewTicker(time.Duration(m.tick) * time.Second)

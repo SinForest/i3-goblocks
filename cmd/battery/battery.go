@@ -65,5 +65,7 @@ func main() {
 	chFull := m.ReadFloat(fFull)
 	chPerc := (chNow * 100.0) / chFull
 
-	fmt.Printf("<span color='%s'>%s %3.1f%%</span>\n", colorFromPercent(chPerc), symbolFromStatus(chPerc, chStatus), chPerc)
+	//TODO: don't color percentage, if high enough
+
+	fmt.Printf("<span color='%s'>%s : %3.1f%%</span>\n", colorFromPercent(chPerc), symbolFromStatus(chPerc, chStatus), chPerc)
 }
