@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/SinForest/i3-goblocks/colormap"
 	"github.com/SinForest/i3-goblocks/module"
 )
 
@@ -18,19 +19,6 @@ const (
 	sIdle   = "Not charging"
 )
 
-func colorFromPercent(perc float64) string {
-	if perc > 60 {
-		return "#0af548" // green
-	}
-	if perc > 30 {
-		return "#cef50a" // yellow
-	}
-	if perc > 15 {
-		return "#f58f0a" // orange
-	}
-	return "#f50a0a" // red
-}
-
 func symbolFromStatus(perc float64, status string) string {
 	if status == sFull {
 		return ""
@@ -40,11 +28,11 @@ func symbolFromStatus(perc float64, status string) string {
 	}
 	res := ""
 	switch {
-	case perc > 60:
+	case perc > 0.6:
 		res = ""
-	case perc > 30:
+	case perc > 0.3:
 		res = ""
-	case perc > 15:
+	case perc > 0.15:
 		res = ""
 	default:
 		res = ""
@@ -56,16 +44,27 @@ func symbolFromStatus(perc float64, status string) string {
 }
 
 func main() {
+	var warnBelow float64
 	tick := flag.Int("tick", 0, "for i3blocks persist mode: if > 0, update interval in seconds")
+	flag.Float64Var(&warnBelow, "warn-below", 0.3, "percentage, under which the whole output is colorized")
 	flag.Parse()
 
 	m := module.New("battery", batPath, *tick)
-	chStatus := m.ReadSysFile(fStatus)
-	chNow := m.ReadFloat(fNow)
-	chFull := m.ReadFloat(fFull)
-	chPerc := (chNow * 100.0) / chFull
+	cm := colormap.DefaultMap()
 
-	//TODO: don't color percentage, if high enough
+	m.Run(func() error {
+		chStatus := m.ReadSysFile(fStatus)
+		chNow := m.ReadFloat(fNow)
+		chFull := m.ReadFloat(fFull)
+		chPerc := chNow / chFull
+		color := cm.Eval(chPerc)
+		textColor := color
+		if chPerc > warnBelow {
+			textColor = colormap.White
+		}
 
-	fmt.Printf("<span color='%s'>%s : %3.1f%%</span>\n", colorFromPercent(chPerc), symbolFromStatus(chPerc, chStatus), chPerc)
+		fmt.Printf("<span color='%s'>%s :</span> <span face='monospace' color='%s'>%3.1f%%</span>\n", color, symbolFromStatus(chPerc, chStatus), textColor, chPerc*100)
+
+		return nil
+	})
 }

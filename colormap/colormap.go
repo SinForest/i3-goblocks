@@ -16,6 +16,8 @@ var (
 	Yellow    = Color{255, 210, 0}
 	Green     = Color{50, 255, 0}
 	Turquoise = Color{0, 255, 170}
+
+	White = Color{255, 255, 255}
 )
 
 func DefaultMap() *ColorMap {
