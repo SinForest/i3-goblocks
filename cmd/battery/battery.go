@@ -14,9 +14,8 @@ const (
 	fNow    = "energy_now"
 	sFull   = "Full"
 	sDis    = "Discharging"
-	sChr    = "Charging"     //TODO: check
-	sNot    = "Not charging" //TODO: what is this for?
-
+	sChr    = "Charging"
+	sIdle   = "Not charging"
 )
 
 func colorFromPercent(perc float64) string {
@@ -36,7 +35,7 @@ func symbolFromStatus(perc float64, status string) string {
 	if status == sFull {
 		return ""
 	}
-	if status == sNot {
+	if status == sIdle {
 		return "󰔟"
 	}
 	res := ""

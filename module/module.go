@@ -83,10 +83,16 @@ func (m *Module) handleClick(inp []byte) {
 	m.clickHandler(m, ev)
 }
 
-func (m *Module) Run(f func()) {
+func (m *Module) Run(f func() error) {
+	tick := func() {
+		err := f()
+		if err != nil {
+			m.logger.Fatal(err.Error())
+		}
+	}
 	if m.tick <= 0 {
 		//TODO: handle clicks here, too
-		f()
+		tick()
 		return
 	}
 	ticker := time.NewTicker(time.Duration(m.tick) * time.Second)
@@ -95,8 +101,9 @@ func (m *Module) Run(f func()) {
 	}
 	for {
 		select {
+		//TODO: handle refreshing signals?
 		case <-ticker.C:
-			f()
+			tick()
 		case inp := <-m.stdIn:
 			m.handleClick(inp)
 		}

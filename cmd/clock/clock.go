@@ -34,7 +34,7 @@ func main() {
 
 	m := module.New("", "", *tick)
 
-	m.Run(func() {
+	m.Run(func() error {
 		t := time.Now()
 		var out string
 		out += fmt.Sprintf("<span face='monospace' color='%s'>%s</span> ",
@@ -56,5 +56,6 @@ func main() {
 			t.Second(),
 		)
 		fmt.Println(out)
+		return nil
 	})
 }

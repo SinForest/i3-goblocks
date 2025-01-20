@@ -82,9 +82,10 @@ func main() {
 			}
 		}
 	})
-	m.Run(func() {
+	m.Run(func() error {
 		blRatio := bm.ratio()
 		fmt.Printf("<span color='%s'>%3.0f%%</span>\n", greyFromPercent(blRatio), blRatio*100)
+		return nil
 	})
 
 }
