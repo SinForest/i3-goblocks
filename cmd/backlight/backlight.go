@@ -5,24 +5,20 @@ import (
 	"fmt"
 	"math"
 	"path"
-	"slices"
 
+	"github.com/SinForest/i3-goblocks/colormap"
 	"github.com/SinForest/i3-goblocks/module"
 )
 
 const pathBL = "/sys/class/backlight/"
 
-const wheelDelta = 0.1
+const wheelDelta = 0.02
+const minWheelBrightness = 0.02
 
 const (
 	fMax = "max_brightness"
 	fNow = "brightness"
 )
-
-func greyFromPercent(ratio float64) string {
-	c := int(ratio * 255)
-	return fmt.Sprintf("#%02[1]x%02[1]x%02[1]x", c)
-}
 
 type brightnessModule struct {
 	*module.Module
@@ -40,6 +36,9 @@ func (bm *brightnessModule) ratio() float64 {
 }
 
 func (bm *brightnessModule) setRatio(to float64) {
+	if to < minWheelBrightness {
+		to = minWheelBrightness
+	}
 	if bm.exponent != 1 {
 		to = math.Pow(to, 1/bm.exponent)
 	}
@@ -64,16 +63,12 @@ func main() {
 
 	m := module.New("backlight", path.Join(pathBL, *blDir), *tick)
 	bm := brightnessModule{m, *exponent}
-	m.RegisterClickHandler(func(m *module.Module, ev *module.ClickEvent) {
-		delta := wheelDelta
-		if slices.Contains(ev.Modifiers, "Shift") {
-			delta /= 5
-		}
-		switch ev.Button {
+	m.RegisterClickHandler(func(m *module.Module, click module.Click) {
+		switch click {
 		case module.BtnWheelUp:
-			bm.setRatio(bm.ratio() + delta)
+			bm.setRatio(bm.ratio() + wheelDelta)
 		case module.BtnWheelDown:
-			bm.setRatio(bm.ratio() - delta)
+			bm.setRatio(bm.ratio() - wheelDelta)
 		case module.BtnMiddle:
 			if bm.ratio() >= 0.9 {
 				bm.setRatio(0.4)
@@ -82,9 +77,11 @@ func main() {
 			}
 		}
 	})
+	cm := colormap.New(120, 120, 120, 255, 255, 255)
+	cm.Register(0.25, 100, 100, 100)
 	m.Run(func() error {
 		blRatio := bm.ratio()
-		fmt.Printf("<span color='%s'>%3.0f%%</span>\n", greyFromPercent(blRatio), blRatio*100)
+		fmt.Printf("<span color='%s'>%3.0f%%</span>\n", cm.Eval(blRatio), blRatio*100)
 		return nil
 	})
 

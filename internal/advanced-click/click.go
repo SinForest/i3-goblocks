@@ -1,4 +1,4 @@
-package module
+package advancedclick
 
 type ClickEvent struct {
 	Name      string      `json:"name,omitempty"`

@@ -2,7 +2,6 @@ package module
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -16,8 +15,9 @@ type Module struct {
 	logger       *log.Logger
 	basePath     string
 	tick         int
-	clickHandler func(*Module, *ClickEvent)
+	clickHandler func(*Module, Click)
 	stdIn        chan []byte
+	DebugMode    bool
 }
 
 func New(logName, basePath string, tick int) *Module {
@@ -31,6 +31,10 @@ func New(logName, basePath string, tick int) *Module {
 		tick:         tick,
 		clickHandler: nil,
 	}
+}
+
+func (m *Module) Log(v ...any) {
+	m.logger.Println(v...)
 }
 
 func (m *Module) ReadSysFile(relPath string) string {
@@ -62,7 +66,7 @@ func (m *Module) WriteSysFile(relPath string, inp string) {
 	}
 }
 
-func (m *Module) RegisterClickHandler(f func(*Module, *ClickEvent)) {
+func (m *Module) RegisterClickHandler(f func(*Module, Click)) {
 	m.clickHandler = f
 }
 
@@ -77,10 +81,18 @@ func (m *Module) initStdReader() {
 	}()
 }
 
+type Click byte
+
+const (
+	BtnLeft Click = '1' + iota
+	BtnMiddle
+	BtnRight
+	BtnWheelUp
+	BtnWheelDown
+)
+
 func (m *Module) handleClick(inp []byte) {
-	ev := &ClickEvent{}
-	json.Unmarshal(inp, ev)
-	m.clickHandler(m, ev)
+	m.clickHandler(m, Click(inp[0]))
 }
 
 func (m *Module) Run(f func() error) {
@@ -106,6 +118,7 @@ func (m *Module) Run(f func() error) {
 			tick()
 		case inp := <-m.stdIn:
 			m.handleClick(inp)
+			tick()
 		}
 	}
 
