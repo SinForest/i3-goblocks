@@ -28,6 +28,7 @@ func symbolFromStatus(perc float64, status string) string {
 	}
 	res := ""
 	switch {
+	//TODO: those are weird, fix them :D
 	case perc > 0.6:
 		res = ""
 	case perc > 0.3:
