@@ -11,8 +11,8 @@ import (
 const batPath = "/sys/class/power_supply/BAT0/"
 const (
 	fStatus = "status"
-	fFull   = "energy_full"
-	fNow    = "energy_now"
+	fFull   = "_full"
+	fNow    = "_now"
 	sFull   = "Full"
 	sDis    = "Discharging"
 	sChr    = "Charging"
@@ -45,8 +45,10 @@ func symbolFromStatus(perc float64, status string) string {
 
 func main() {
 	var warnBelow float64
+	var filePrefix string
 	tick := flag.Int("tick", 0, "for i3blocks persist mode: if > 0, update interval in seconds")
 	flag.Float64Var(&warnBelow, "warn-below", 0.3, "percentage, under which the whole output is colorized")
+	flag.StringVar(&filePrefix, "prefix", "energy", "file prefix of energy files, usually 'charge' or 'energy'")
 	flag.Parse()
 
 	m := module.New("battery", batPath, *tick)
@@ -54,8 +56,8 @@ func main() {
 
 	m.Run(func() error {
 		chStatus := m.ReadSysFile(fStatus)
-		chNow := m.ReadFloat(fNow)
-		chFull := m.ReadFloat(fFull)
+		chNow := m.ReadFloat(filePrefix + fNow)
+		chFull := m.ReadFloat(filePrefix + fFull)
 		chPerc := chNow / chFull
 		color := cm.Eval(chPerc)
 		textColor := color

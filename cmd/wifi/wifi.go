@@ -30,6 +30,7 @@ func main() {
 			if errors.As(err, &eErr) {
 				if eErr.ProcessState.ExitCode() == 255 {
 					fmt.Printf("<span color='#ff0000'> </span>: no wifi\n")
+					return nil
 				}
 				return fmt.Errorf("iwgetid returned with status %d: %v", eErr.ProcessState.ExitCode(), eErr.Stderr)
 			}
