@@ -81,7 +81,7 @@ func main() {
 	cm.Register(0.25, 100, 100, 100)
 	m.Run(func() error {
 		blRatio := bm.ratio()
-		fmt.Printf("<span color='%s'>%3.0f%%</span>\n", cm.Eval(blRatio), blRatio*100)
+		fmt.Printf("<span color='#ffff00'>󱠂</span> : <span color='%s'>%3.0f%%</span>\n", cm.Eval(blRatio), blRatio*100)
 		return nil
 	})
 
