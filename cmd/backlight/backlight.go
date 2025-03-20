@@ -26,8 +26,8 @@ type brightnessModule struct {
 }
 
 func (bm *brightnessModule) ratio() float64 {
-	blMax := bm.ReadFloat(fMax)
-	blNow := bm.ReadFloat(fNow)
+	blMax := bm.MustReadFloat(fMax)
+	blNow := bm.MustReadFloat(fNow)
 	blRatio := (blNow / blMax)
 	if bm.exponent != 1 {
 		blRatio = math.Pow(blRatio, bm.exponent)
@@ -42,7 +42,7 @@ func (bm *brightnessModule) setRatio(to float64) {
 	if bm.exponent != 1 {
 		to = math.Pow(to, 1/bm.exponent)
 	}
-	blMax := bm.ReadFloat(fMax)
+	blMax := bm.MustReadFloat(fMax)
 	to *= blMax
 
 	if to > blMax {

@@ -37,7 +37,7 @@ func main() {
 			return fmt.Errorf("unknown error when running iwgetid: %v", err)
 		}
 
-		sysOut := m.ReadSysFile("wireless")
+		sysOut := m.MustReadSysFile("wireless")
 		perc := 0.0
 		for _, line := range strings.Split(sysOut, "\n")[2:] /*skip header*/ {
 			if *dev != "" && !strings.HasPrefix(line, *dev+":") {

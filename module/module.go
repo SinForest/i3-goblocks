@@ -57,19 +57,38 @@ func (m *Module) ScanSysFile(relPath string) iter.Seq[string] {
 	}
 }
 
-func (m *Module) ReadSysFile(relPath string) string {
+func (m *Module) ReadSysFile(relPath string) (string, error) {
 	s, err := os.ReadFile(path.Join(m.basePath, relPath))
 	if err != nil {
-		m.logger.Fatalf("failed to read sys file %q: %v", relPath, err)
+		return "", fmt.Errorf("failed to read sys file %q: %w", relPath, err)
 	}
-	return strings.TrimSpace(string(s))
+	return strings.TrimSpace(string(s)), nil
 }
 
-func (m *Module) ReadFloat(relPath string) float64 {
-	s := m.ReadSysFile(relPath)
+func (m *Module) MustReadSysFile(relPath string) string {
+	s, err := m.ReadSysFile(relPath)
+	if err != nil {
+		m.logger.Fatalf("%v", err)
+	}
+	return s
+}
+
+func (m *Module) ReadFloat(relPath string) (float64, error) {
+	s, err := m.ReadSysFile(relPath)
+	if err != nil {
+		return 0, err
+	}
 	f, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		m.logger.Fatalf("failed to convert %q to float: %v", s, err)
+		return 0, fmt.Errorf("failed to convert %q to float: %w", s, err)
+	}
+	return f, nil
+}
+
+func (m *Module) MustReadFloat(relPath string) float64 {
+	f, err := m.ReadFloat(relPath)
+	if err != nil {
+		m.logger.Fatalf("%v", err)
 	}
 	return f
 }

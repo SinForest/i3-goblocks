@@ -55,9 +55,9 @@ func main() {
 	cm := colormap.DefaultMap()
 
 	m.Run(func() error {
-		chStatus := m.ReadSysFile(fStatus)
-		chNow := m.ReadFloat(filePrefix + fNow)
-		chFull := m.ReadFloat(filePrefix + fFull)
+		chStatus := m.MustReadSysFile(fStatus)
+		chNow := m.MustReadFloat(filePrefix + fNow)
+		chFull := m.MustReadFloat(filePrefix + fFull)
 		chPerc := chNow / chFull
 		color := cm.Eval(chPerc)
 		textColor := color
