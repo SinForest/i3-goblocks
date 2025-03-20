@@ -3,6 +3,7 @@ package module
 import (
 	"bufio"
 	"fmt"
+	"iter"
 	"log"
 	"os"
 	"path"
@@ -35,6 +36,25 @@ func New(logName, basePath string, tick int) *Module {
 
 func (m *Module) Log(v ...any) {
 	m.logger.Println(v...)
+}
+
+func (m *Module) ScanSysFile(relPath string) iter.Seq[string] {
+	f, err := os.Open(path.Join(m.basePath, relPath))
+	if err != nil {
+		m.logger.Fatalf("failed to open sys file %q: %v", relPath, err)
+	}
+	scanner := bufio.NewScanner(f)
+	return func(yield func(string) bool) {
+		defer f.Close()
+		for {
+			if !scanner.Scan() {
+				return
+			}
+			if !yield(scanner.Text()) {
+				return
+			}
+		}
+	}
 }
 
 func (m *Module) ReadSysFile(relPath string) string {

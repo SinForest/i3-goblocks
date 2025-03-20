@@ -5,6 +5,7 @@ package colormap
 import (
 	"fmt"
 	"slices"
+	"strings"
 
 	"golang.org/x/exp/constraints"
 )
@@ -14,7 +15,7 @@ var (
 	Red       = Color{255, 0, 0}
 	Orange    = Color{255, 150, 0}
 	Yellow    = Color{255, 210, 0}
-	Green     = Color{50, 255, 0}
+	Green     = Color{55, 219, 37}
 	Turquoise = Color{0, 255, 170}
 
 	White = Color{255, 255, 255}
@@ -132,4 +133,28 @@ func (cm *ColorMap) Eval(pos float64) Color {
 		}
 	}
 	return (*cm)[len(*cm)-1].color // this should never be reached
+}
+
+// AddTopThreshold stretches the first color transition, such that the second
+// color is evaluated at position pos2nd, and equally compresses the remaining transition.
+func (cm *ColorMap) AddTopThreshold(pos2nd float64) {
+	if pos2nd <= 0 || pos2nd > 1 || len(*cm) < 2 {
+		return
+	}
+	factor := pos2nd / (*cm)[len(*cm)-2].pos
+	for idx, col := range (*cm)[:len(*cm)-1] {
+		col.pos *= factor
+		(*cm)[idx] = col
+	}
+}
+
+func (cm *ColorMap) String() string {
+	sb := strings.Builder{}
+	for idx, col := range *cm {
+		sb.WriteString(fmt.Sprintf("%6.2f%%: %s;", col.pos*100, col.color))
+		if idx != len(*cm)-1 {
+			sb.WriteString("\n")
+		}
+	}
+	return sb.String()
 }

@@ -65,7 +65,7 @@ func main() {
 			textColor = colormap.White
 		}
 
-		fmt.Printf("<span color='%s'>%s :</span> <span face='monospace' color='%s'>%3.1f%%</span>\n", color, symbolFromStatus(chPerc, chStatus), textColor, chPerc*100)
+		fmt.Printf("<span color='%s'>%s :</span> <span face='monospace' color='%s'>%5.1f%%</span>\n", color, symbolFromStatus(chPerc, chStatus), textColor, chPerc*100)
 
 		return nil
 	})
