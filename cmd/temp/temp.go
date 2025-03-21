@@ -46,8 +46,8 @@ func main() {
 		}
 		max /= 1000
 
-		color := cm.Eval(scale(15, 90, max))
-		fmt.Printf("<span color='%[1]s'> </span>: <span face='monospace' color='%[1]s'>%4.1[2]f°C</span>\n", color, max)
+		color := cm.Eval(scale(15, 100, max)) //TODO: scale configurable?
+		fmt.Printf("<span color='%[1]s'> </span>: <span face='monospace' color='%[1]s'>%5.1[2]f°C</span>\n", color, max)
 
 		return nil
 	})
